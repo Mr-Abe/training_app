@@ -1,0 +1,121 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Virtual Environments
+env/
+venv/
+ENV/
+.venv/
+env.bak/
+venv.bak/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+.coverage
+.cache
+.pytest_cache/
+
+# Flask cache and logs
+instance/
+*.log
+
+# Flask uploads
+uploads/
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# Environments
+.env
+*.env
+
+# Database files
+*.sqlite3
+*.db
+
+# Static files (if generated or unnecessary)
+static/
+
+# Media files (if any)
+media/
+
+# MacOS files
+.DS_Store
+
+# Thumbnails
+.thumbnail_cache/
+
+# Test files
+*.spec
+
+# Other files
+*.bak
+*.swp
+
+# Secret configuration files
+config.py
+config.yaml
+settings.py
+
+# Logs and debug files
+*.log
+*.pot
+
+# Anaconda
+.conda/
+
+# Egg files
+*.egg

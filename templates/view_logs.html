@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Your Workout Logs</h2>
+<table>
+    <tr>
+        <th>Date</th>
+        <th>Exercise</th>
+        <th>Sets</th>
+        <th>Reps</th>
+        <th>Weight</th>
+        <th>Notes</th>
+    </tr>
+    {% for workout in workouts %}
+    <tr>
+        <td>{{ workout.date.strftime('%Y-%m-%d') }}</td>
+        <td>{{ workout.exercise_name }}</td>
+        <td>{{ workout.sets }}</td>
+        <td>{{ workout.reps }}</td>
+        <td>{{ workout.weight }}</td>
+        <td>{{ workout.notes }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
