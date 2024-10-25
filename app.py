@@ -6,12 +6,15 @@ from flask_login import LoginManager, login_user, login_required, logout_user, U
 from  dotenv import load_dotenv
 import os
 
+if not os.path.exists('training_app.db'):
+    db.create_all()
+
 load_dotenv()
 
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///training_app.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///home/site/wwwroot/training_app.db'
 
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
