@@ -13,6 +13,9 @@ ENV/
 .venv/
 env.bak/
 venv.bak/
+.conda/
+.env/
+*.env
 
 # Distribution / packaging
 build/
@@ -20,6 +23,9 @@ dist/
 *.egg-info/
 .eggs/
 pip-wheel-metadata/
+wheels/
+share/python-wheels/
+*.egg
 
 # Installer logs
 pip-log.txt
@@ -29,10 +35,15 @@ pip-delete-this-directory.txt
 htmlcov/
 .tox/
 .nox/
-coverage.xml
 .coverage
+.coverage.*
 .cache
 .pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
 
 # Flask cache and logs
 instance/
@@ -78,19 +89,13 @@ dmypy.json
 # Rope project settings
 .ropeproject
 
-# Environments
-.env
-*.env
-
 # Database files
 *.sqlite3
 *.db
 
-# Static files (if generated or unnecessary)
-static/
-
-# Media files (if any)
+# Media files (user uploads)
 media/
+uploads/
 
 # MacOS files
 .DS_Store
@@ -106,6 +111,7 @@ media/
 *.swp
 
 # Secret configuration files
+# Be cautious with these; include them if they contain sensitive information
 config.py
 config.yaml
 settings.py
@@ -117,5 +123,18 @@ settings.py
 # Anaconda
 .conda/
 
-# Egg files
-*.egg
+# Coverage reports
+htmlcov/
+coverage/
+
+# Temporary files
+tmp/
+temp/
+
+# Backup files
+*.bak
+*.orig
+
+# Remove 'static/' from .gitignore
+# 'static/' directory is often necessary for web applications to function
+# Do not ignore 'static/' unless it contains generated or unnecessary files
