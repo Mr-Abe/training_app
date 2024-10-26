@@ -13,11 +13,11 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////home/site/wwwroot/training_app.db'
 
+# Initialize extensions
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
-
 
 # User model
 class User(db.Model, UserMixin):
@@ -51,40 +51,53 @@ class TrainingPlan(db.Model):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+# Create database tables before the first request
+@app.before_first_request
+def create_tables():
+    db.create_all()
+
 @app.route('/')
-@login_required  # User must be logged in to access this route
+@login_required
 def home():
     return render_template('home.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        # Get form data
-        username = request.form['username']
-        password = request.form['password']
-        # Hash the password
-        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-        # Create a new user
-        user = User(username=username, password_hash=hashed_password)
-        # Add to database
-        db.session.add(user)
-        db.session.commit()
-        flash('Account created successfully!', 'success')
-        return redirect(url_for('login'))
+        try:
+            username = request.form['username']
+            password = request.form['password']
+
+            # Check if the username already exists
+            if User.query.filter_by(username=username).first():
+                flash('Username already exists. Please choose a different one.', 'danger')
+                return redirect(url_for('register'))
+
+            # Hash the password
+            hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+            # Create a new user
+            user = User(username=username, password_hash=hashed_password)
+            # Add to database
+            db.session.add(user)
+            db.session.commit()
+            flash('Account created successfully!', 'success')
+            return redirect(url_for('login'))
+        except Exception as e:
+            flash('An error occurred during registration. Please try again.', 'danger')
+            print(f"Registration error: {e}")  # For debugging purposes
+            return redirect(url_for('register'))
 
     return render_template('register.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        # Get form data
         username = request.form['username']
         password = request.form['password']
 
         # Query the database for the user
         user = User.query.filter_by(username=username).first()
         if user and user.check_password(password):
-            # Log the user in
             login_user(user)
             return redirect(url_for('home'))
         else:
@@ -100,36 +113,38 @@ def logout():
 @app.route('/training_plan')
 @login_required
 def training_plan():
-    plan = TrainingPlan.query.all()  # Retrieves all training plan entries
+    plan = TrainingPlan.query.all()
     return render_template('training_plan.html', plan=plan)
 
 @app.route('/log_workout', methods=['GET', 'POST'])
 @login_required
 def log_workout():
     if request.method == 'POST':
-        # Get form data
-        date = datetime.strptime(request.form['date'], '%Y-%m-%d')
-        exercise_name = request.form['exercise_name']
-        sets = int(request.form['sets'])
-        reps = int(request.form['reps'])
-        weight = float(request.form['weight'])
-        notes = request.form['notes']
+        try:
+            date = datetime.strptime(request.form['date'], '%Y-%m-%d')
+            exercise_name = request.form['exercise_name']
+            sets = int(request.form['sets'])
+            reps = int(request.form['reps'])
+            weight = float(request.form['weight'])
+            notes = request.form['notes']
 
-        # Create a new workout entry
-        entry = WorkoutEntry(
-            date=date,
-            exercise_name=exercise_name,
-            sets=sets,
-            reps=reps,
-            weight=weight,
-            notes=notes,
-            author=current_user  # Sets the user_id automatically
-        )
-        # Add to database
-        db.session.add(entry)
-        db.session.commit()
-        flash('Workout logged successfully!', 'success')
-        return redirect(url_for('view_logs'))
+            entry = WorkoutEntry(
+                date=date,
+                exercise_name=exercise_name,
+                sets=sets,
+                reps=reps,
+                weight=weight,
+                notes=notes,
+                author=current_user
+            )
+            db.session.add(entry)
+            db.session.commit()
+            flash('Workout logged successfully!', 'success')
+            return redirect(url_for('view_logs'))
+        except Exception as e:
+            flash('An error occurred while logging your workout. Please try again.', 'danger')
+            print(f"Workout logging error: {e}")  # For debugging purposes
+            return redirect(url_for('log_workout'))
 
     return render_template('log_workout.html')
 
@@ -142,12 +157,12 @@ def view_logs():
 @app.route('/progress')
 @login_required
 def progress():
-    # Get the exercise name from the query parameters, default to 'Bench Press'
     exercise_name = request.args.get('exercise', 'Bench Press')
-    # Retrieve workouts for the specified exercise
-    workouts = WorkoutEntry.query.filter_by(author=current_user, exercise_name=exercise_name).order_by(WorkoutEntry.date).all()
-    
-    # Prepare data for the chart
+    workouts = WorkoutEntry.query.filter_by(
+        author=current_user,
+        exercise_name=exercise_name
+    ).order_by(WorkoutEntry.date).all()
+
     dates = [workout.date.strftime('%Y-%m-%d') for workout in workouts]
     weights = [workout.weight for workout in workouts]
 
